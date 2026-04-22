@@ -51,7 +51,7 @@ Didesain dengan nuansa **pink aesthetic 💗** yang memberikan kesan elegan, mod
 
 ## 💗 Author
 
-✨ Dibuat dengan penuh cinta oleh **Risma**
+✨ Dibuat dengan penuh cinta oleh **hicima**
 🎀 Keep learning, keep growing, and keep glowing 💕
 
 ---
