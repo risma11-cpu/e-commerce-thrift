@@ -102,6 +102,7 @@ img { max-width:100%; display:block; }
 }
 .cart-badge.show { display:flex; }
 .cart-btn-wrap { position:relative; }
+.wish-btn-wrap { position:relative; } 
 
 /* ============================================
    HERO
