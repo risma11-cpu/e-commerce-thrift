@@ -1,2 +1,2 @@
 # e-commerce-thrift
-![Preview Projects](images/projects 2.jpg)
+![Preview Project](images/project-2.jpg)
