@@ -1015,12 +1015,9 @@ textarea.form-input { resize:vertical; min-height:72px; }
 }
 
 .aks-card-v {
-    border-radius: 16px;
-    overflow: hidden;
-    background: rgba(39,39,42,0.3);
-    border: 1px solid rgba(255,255,255,0.05);
-    transition: all 0.3s ease;
-    animation: fadeUp 0.35s ease both;
+    border-radius:16px; overflow:hidden;
+    background:rgba(39,39,42,0.3); border:1px solid rgba(255,255,255,0.05);
+    transition:all 0.3s ease; animation:fadeUp 0.35s ease both;
 }
 
 .aks-card-v:hover {
