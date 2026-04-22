@@ -134,6 +134,7 @@ function toggleWishItem(id) {
     updateWishUI();
     refreshAll();
 }
+
 function updateWishUI() {
     var bd = document.getElementById("wishBadge");
     if (bd) {
@@ -169,7 +170,6 @@ function updateWishUI() {
     el.innerHTML = h;
     updateBottomNavBadge();
 }
-
 
 function toggleWish() {
     var sb = document.getElementById("wishSidebar");
@@ -248,7 +248,8 @@ function render() {
         var ic = cart.find(function(c){ return c.id === p.id; });
         var bg = p.badge ? '<span class="product-badge ' + badgeCls(p.badge) + '">' + p.badge + '</span>' : "";
         h += '<div class="product-card" style="animation-delay:' + (i*35) + 'ms">' +
-            '<div class="product-img-wrap" onclick="openModal(' + p.id + ')">' + bg + heartIcon(p.id) +
+            heartIcon(p.id) +
+            '<div class="product-img-wrap" onclick="openModal(' + p.id + ')">' + bg +
             '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy">' +
             '<div class="product-img-overlay"><span class="iconify" data-icon="mdi:eye-outline"></span></div></div>' +
             '<div class="product-body"><span class="product-cat">' + p.category + '</span>' +
@@ -260,7 +261,6 @@ function render() {
     }
     grid.innerHTML = h;
 }
-
 /* ============================================
    RENDER AKSESORIS
    ============================================ */
@@ -288,6 +288,30 @@ function renderAksesoris() {
                 (ic ? "Di Keranjang" : "Tambah") + '</button></div></div>';
         }
         scrollEl.innerHTML = sH;
+    }
+
+    var gridEl = document.getElementById("aksGrid");
+    if (gridEl) {
+        var gH = "";
+        for (var i = 0; i < aksAll.length; i++) {
+            var p = aksAll[i];
+            var ic = cart.find(function(c) { return c.id === p.id; });
+            var bg = p.badge ? '<span class="aks-card-v-badge ' + badgeCls(p.badge) + '">' + p.badge + '</span>' : "";
+            gH += '<div class="aks-card-v" style="animation-delay:' + (i * 50) + 'ms">' +
+                heartIcon(p.id) +
+                '<div class="aks-card-v-img" onclick="openModal(' + p.id + ')">' + bg +
+                '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy">' +
+                '<div class="aks-card-v-overlay"><span class="iconify" data-icon="mdi:eye-outline"></span></div></div>' +
+                '<div class="aks-card-v-body">' +
+                '<span class="aks-card-v-cat">' + p.category + '</span>' +
+                '<h3 class="aks-card-v-name" onclick="openModal(' + p.id + ')">' + p.name + '</h3>' +
+                '<div class="aks-card-v-bottom">' +
+                '<span class="aks-card-v-price">' + fmtRp(p.price) + '</span>' +
+                '<button class="aks-card-v-btn ' + (ic ? "in-cart" : "") + '" onclick="addCart(' + p.id + ', null)">' +
+                '<span class="iconify" data-icon="' + (ic ? "mdi:check" : "mdi:plus") + '"></span></button>' +
+                '</div></div></div>';
+        }
+        gridEl.innerHTML = gH;
     }
 
     var gridEl = document.getElementById("aksGrid");
@@ -769,6 +793,23 @@ document.addEventListener("keydown", function(e) {
 /* ============================================
    INIT
    ============================================ */
+document.addEventListener("DOMContentLoaded", function() {
+    renderCats();
+    refreshAll();
+    updateCartUI();
+    updateWishUI();
+    renderSlider();
+    updateBottomNavBadge();
+});
+/* ============================================
+   BOTTOM NAV
+   ============================================ */
+function setActiveNav(el) {
+    var all = document.querySelectorAll(".bottom-nav-item");
+    for (var i = 0; i < all.length; i++) all[i].classList.remove("active");
+    el.classList.add("active");
+}
+
 function updateBottomNavBadge() {
     var bd = document.getElementById("bottomWishBadge");
     if (bd) {
