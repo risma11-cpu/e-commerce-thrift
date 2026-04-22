@@ -60,4 +60,3 @@ Didesain dengan nuansa **pink aesthetic 💗** yang memberikan kesan elegan, mod
 
 Project ini dibuat untuk pembelajaran dan pengembangan skill web development 💻✨
 dan dapat dikembangkan menjadi platform e-commerce thrift yang lebih kompleks 🚀
-# e-commerce-thrift
