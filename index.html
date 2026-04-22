@@ -421,6 +421,31 @@
             </div>
         </div>
     </footer>
+    <!-- Bottom Navbar -->
+<nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+        <a href="#" class="bottom-nav-item active" data-nav="home" onclick="setActiveNav(this)">
+            <span class="iconify" data-icon="mdi:home"></span>
+            <span>Home</span>
+        </a>
+        <a href="#products" class="bottom-nav-item" data-nav="explore" onclick="setActiveNav(this)">
+            <span class="iconify" data-icon="mdi:compass-outline"></span>
+            <span>Explore</span>
+        </a>
+        <button class="bottom-nav-jual" onclick="toast('Fitur Jual segera hadir!', 'info')">
+            <span class="iconify" data-icon="mdi:plus"></span>
+        </button>
+        <button class="bottom-nav-item" data-nav="wishlist" onclick="toggleWish(); setActiveNav(this)">
+            <span class="iconify" data-icon="mdi:heart-outline"></span>
+            <span>Wishlist</span>
+            <span id="bottomWishBadge" class="bottom-nav-badge">0</span>
+        </button>
+        <a href="#" class="bottom-nav-item" data-nav="akun" onclick="setActiveNav(this)">
+            <span class="iconify" data-icon="mdi:account-outline"></span>
+            <span>Akun</span>
+        </a>
+    </div>
+</nav>
 
     <script src="script.js"></script>
 </body>
