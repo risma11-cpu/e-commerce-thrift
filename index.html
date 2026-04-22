@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thrift by hicima_</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="logo">
+                <div class="logo"><div class="logo-icon" style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; font-style:italic;">H</div>
+                <span class="logo-text">HI<span class="logo-pink">CIMA</span></span></div>
+                
+            </a>
+            <div class="navbar-search">
+                <span class="iconify search-icon" data-icon="mdi:magnify"></span>
+                <input id="searchInput" type="text" placeholder="Cari produk thrift...">
+                <kbd>⌘K</kbd>
+            </div>
+            <div class="navbar-actions">
+                                    <button onclick="toggleWish()" class="nav-btn wish-btn-wrap">
+                        <span class="iconify" data-icon="mdi:heart-outline"></span>
+                        <span id="wishBadge" class="cart-badge">0</span>
+                    </button>
+                <button onclick="toggleCart()" class="nav-btn cart-btn-wrap">
+                    <span class="iconify" data-icon="mdi:shopping-outline"></span>
+                    <span id="cartBadge" class="cart-badge">0</span>
+                </button>
+                <button class="nav-btn">
+                    <span class="iconify" data-icon="mdi:account-outline"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+        <!-- Wishlist Overlay & Sidebar -->
+    <div class="wish-overlay" id="wishOverlay" onclick="toggleWish()"></div>
+    <aside class="wish-sidebar" id="wishSidebar">
+        <div class="cart-sidebar-header">
+            <div class="cart-sidebar-title">
+                <span class="iconify" data-icon="mdi:heart" style="color:var(--pink-400)"></span>
+                <h2>Wishlist</h2>
+                <span id="wishCount" class="cart-item-count">0 item</span>
+            </div>
+            <button onclick="toggleWish()" class="cart-close-btn">
+                <span class="iconify" data-icon="mdi:close"></span>
+            </button>
+        </div>
+        <div id="wishItems" class="cart-sidebar-items"></div>
+    </aside>
+
+    <!-- Cart Overlay -->
+    <div id="cartOverlay" class="cart-overlay" onclick="toggleCart()"></div>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-sidebar-header">
+            <div class="cart-sidebar-title">
+                <span class="iconify" data-icon="mdi:shopping"></span>
+                <h2>Keranjang</h2>
+                <span id="cartItemCount" class="cart-item-count">0 item</span>
+            </div>
+            <button onclick="toggleCart()" class="cart-close-btn">
+                <span class="iconify" data-icon="mdi:close"></span>
+            </button>
+        </div>
+        <div id="cartItems" class="cart-sidebar-items"></div>
+        <div id="cartFooter" class="cart-sidebar-footer" style="display:none;">
+            <div class="cart-summary-rows">
+                <div class="cart-row"><span>Subtotal</span><span id="cartSubtotal">Rp 0</span></div>
+                <div class="cart-row"><span>Ongkos Kirim</span><span class="text-emerald">Gratis</span></div>
+                <div class="cart-row cart-row-total"><span>Total</span><span id="cartTotal">Rp 0</span></div>
+            </div>
+            <button onclick="openCheckout()" class="btn-checkout">
+                <span class="iconify" data-icon="mdi:lock-outline"></span> Checkout Sekarang
+            </button>
+            <button onclick="clearCart()" class="btn-clear-cart">Kosongkan Keranjang</button>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal-overlay" onclick="closeModal(event)">
+        <div id="modalContent" class="modal-content" onclick="event.stopPropagation()"></div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal-overlay">
+        <div class="checkout-box" onclick="event.stopPropagation()">
+            <div id="successState" class="success-state" style="display:none;">
+                <span class="iconify success-check" data-icon="mdi:check-circle"></span>
+                <h2>Pesanan Berhasil!</h2>
+                <p>Terima kasih sudah berbelanja di Thrift by hicima_. Pesanan akan segera diproses.</p>
+                <button class="btn-primary-full" onclick="finishCheckout()">Kembali Belanja</button>
+            </div>
+            <div id="checkoutForm">
+                <div class="checkout-header">
+                    <h3>Checkout</h3>
+                    <button onclick="closeCheckout()" class="checkout-close">&times;</button>
+                </div>
+                <div class="checkout-body">
+                    <div class="stepper">
+                        <div class="stepper-line"></div>
+                        <div class="stepper-dot active" id="s1">1</div>
+                        <div class="stepper-dot" id="s2">2</div>
+                        <div class="stepper-dot" id="s3">3</div>
+                    </div>
+                    <div id="step1">
+                        <h4>Informasi Pengiriman</h4>
+                        <div class="form-group"><label>Nama Penerima</label><input type="text" id="custName" class="form-input" placeholder="Contoh: Budi Santoso"></div>
+                        <div class="form-group"><label>Nomor WhatsApp</label><input type="tel" id="custPhone" class="form-input" placeholder="Contoh: 08123456789"></div>
+                        <div class="form-group"><label>Alamat Lengkap</label><textarea id="custAddress" class="form-input" placeholder="Jalan, RT/RW, Kota, Kode Pos..."></textarea></div>
+                        <button class="btn-primary-full" onclick="nextStep()">Lanjut ke Pembayaran</button>
+                    </div>
+                    <div id="step2" style="display:none;">
+                        <h4>Pilih Metode Pembayaran</h4>
+                        <div class="pay-option" onclick="selectPay('BRI',this)"><div class="pay-icon"><span class="iconify" data-icon="mdi:bank"></span></div><div class="pay-info"><b>Bank BRI</b><small>Transfer Bank</small></div></div>
+                        <div class="pay-option" onclick="selectPay('BSI',this)"><div class="pay-icon"><span class="iconify" data-icon="mdi:landmark"></span></div><div class="pay-info"><b>Bank BSI</b><small>Transfer Bank</small></div></div>
+                        <div class="pay-option" onclick="selectPay('EWALLET',this)"><div class="pay-icon"><span class="iconify" data-icon="mdi:wallet"></span></div><div class="pay-info"><b>E-Wallet (DANA/GoPay)</b><small>Scan QR / Manual Transfer</small></div></div>
+                        <button class="btn-primary-full" onclick="goStep3()">Lanjut Bayar</button>
+                        <button class="btn-ghost-full" onclick="prevStep()">Kembali</button>
+                    </div>
+                    <div id="step3" style="display:none;">
+                        <div class="pay-instruction">
+                            <div id="s3icon" class="s3-icon"><span class="iconify" data-icon="mdi:bank"></span></div>
+                            <h3 id="s3bank">Transfer BRI</h3>
+                            <div id="s3amount" class="s3-amount">Rp 0</div>
+                            <div id="s3account" class="s3-account" onclick="copyAcc(this)">717 7288 289</div>
+                            <small class="s3-hint">Klik nomor untuk menyalin</small>
+                            <div class="s3-timer"><span class="iconify" data-icon="mdi:clock-outline"></span> <span id="countdown">23:59:59</span></div>
+                        </div>
+                        <p class="s3-note">Silakan transfer sesuai nominal sebelum waktu habis.</p>
+                        <button class="btn-primary-full" id="confirmBtn" onclick="confirmPay()">Saya Sudah Transfer</button>
+                        <button class="btn-ghost-full" onclick="prevStep()">Ganti Metode</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-glow"></div>
+            <div class="hero-inner">
+                <div class="hero-badge">
+                    <span class="pulse-dot"></span>
+                    Thrift Premium — Grade A Original
+                </div>
+                <h1>Gaya Vintage,<br><span class="hero-gradient">Harga Teman.</span></h1>
+                <p class="hero-desc">Temukan pakaian bekas berkualitas premium yang sudah dicuci, diseterilkan, dan siap pakai. Tampil unik, hemat, dan bumi senang.</p>
+                <div class="hero-btns">
+                    <a href="#products" class="btn-primary">
+                        Mulai Belanja <span class="iconify" data-icon="mdi:arrow-right"></span>
+                    </a>
+                    <a href="#about" class="btn-ghost">Cerita Kami</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat"><div class="stat-num">100+</div><div class="stat-label">Produk</div></div>
+                    <div class="stat"><div class="stat-num">2K+</div><div class="stat-label">Customer</div></div>
+                    <div class="stat"><div class="stat-num">4.9</div><div class="stat-label">Rating</div></div>
+                    <div class="stat"><div class="stat-num">24J</div><div class="stat-label">Pengiriman</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Promo Banners -->
+        <section class="promo-section">
+            <div class="promo-grid">
+                <div class="promo-card promo-pink">
+                    <div class="promo-glow"></div>
+                    <span class="promo-tag">Koleksi Baru</span>
+                    <h3>Dress Vintage</h3>
+                    <p>Diskon 20% untuk dress koleksi terbaru</p>
+                    <button class="promo-btn">Lihat Koleksi</button>
+                </div>
+                <div class="promo-card promo-dark">
+                    <span class="promo-tag">Gratis Ongkir</span>
+                    <h3>Ke Seluruh Indonesia</h3>
+                    <p>Min. belanja Rp400.000</p>
+                    <button class="promo-btn promo-btn-ghost">Syarat & Ketentuan</button>
+                </div>
+            </div>
+        </section>
+        <!-- New Arrivals Slider -->
+        <section class="section">
+            <div class="slider-header">
+                <div>
+                    <span class="slider-tag"><span class="iconify" data-icon="mdi:sparkles"></span> BARU DATANG</span>
+                    <h2>Hello, <span class="pink-text">Thrift!</span></h2>
+                    <p>Item langka yang baru mendarat minggu ini. Segera aman sebelum kehabisan!</p>
+                </div>
+            </div>
+            <div class="slider-track" id="sliderTrack"></div>
+        </section>
+        <!-- Features -->
+        <section class="section">
+            <div class="features-grid">
+                <div class="feat-card">
+                    <div class="feat-icon-wrap">
+                        <span class="iconify" data-icon="mdi:sparkles"></span>
+                    </div>
+                    <h3>High Quality</h3>
+                    <p>Kami kurasi satu per satu barang. Tidak ada barang cacat atau robek.</p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon-wrap">
+                        <span class="iconify" data-icon="mdi:hand-wash-outline"></span>
+                    </div>
+                    <h3>Steril & Wangi</h3>
+                    <p>Semua baju sudah dicuci dan diseterilkan sebelum dikirim ke Anda.</p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon-wrap">
+                        <span class="iconify" data-icon="mdi:leaf"></span>
+                    </div>
+                    <h3>Eco-Friendly</h3>
+                    <p>Belanja thrift adalah cara terbaik mengurangi limbah tekstil dunia.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section id="categories" class="section">
+            <div class="section-head">
+                <h2>Kategori</h2>
+                <p>Jelajahi berbagai kategori thrift kami</p>
+            </div>
+            <div class="cat-grid" id="catGrid"></div>
+        </section>
+
+        <!-- Products -->
+        <section id="products" class="section">
+            <div class="section-head-row">
+                <div>
+                    <h2>Koleksi Terbaru</h2>
+                    <p id="productCount" class="section-sub">Menampilkan 20 produk</p>
+                </div>
+                <div class="toolbar">
+                    <select id="sortSelect" class="sort-select">
+                        <option value="popular">Terpopuler</option>
+                        <option value="price-low">Harga Terendah</option>
+                        <option value="price-high">Harga Tertinggi</option>
+                        <option value="newest">Terbaru</option>
+                        <option value="rating">Rating Tertinggi</option>
+                    </select>
+                    <button onclick="togglePriceFilter()" id="priceToggleBtn" class="filter-btn-icon">
+                        <span class="iconify" data-icon="mdi:filter-variant"></span> Filter
+                    </button>
+                </div>
+            </div>
+
+            <div id="priceFilter" class="price-panel" style="display:none;">
+                <div class="price-panel-inner">
+                    <span class="price-panel-label">Rentang Harga</span>
+                    <div class="price-ranges">
+                        <input type="range" id="priceMin" min="0" max="150000" value="0" step="5000" oninput="updatePriceLabel()">
+                        <input type="range" id="priceMax" min="0" max="150000" value="150000" step="5000" oninput="updatePriceLabel()">
+                    </div>
+                    <div class="price-panel-bottom">
+                        <span id="priceLabel" class="price-panel-value">Rp 0 — Rp 150.000</span>
+                        <button onclick="applyPriceFilter()" class="price-apply-btn">Terapkan</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="productGrid" class="product-grid"></div>
+
+            <div id="emptyState" class="empty-state" style="display:none;">
+                <span class="iconify empty-icon" data-icon="mdi:package-variant-remove"></span>
+                <h3>Produk Tidak Ditemukan</h3>
+                <p>Coba ubah filter atau kata kunci pencarian</p>
+                <button onclick="resetFilters()" class="btn-ghost">Reset Filter</button>
+            </div>
+
+            <div id="loadMoreWrap" class="load-more" style="display:none;">
+                <button onclick="loadMore()" class="btn-ghost">
+                    <span class="iconify" data-icon="mdi:refresh"></span> Muat Lebih Banyak
+                </button>
+            </div>        </div>  <!-- akhir loadMoreWrap -->
+        </section>  <!-- akhir products -->
+
+        <!-- ========== BARU: KOLEKSI AKSESORIS ========== -->
+        <section id="aksesoris" class="section aksesoris-section">
+            <div class="aks-header">
+                <div class="aks-header-text">
+                    <span class="aks-tag"><span class="iconify" data-icon="mdi:sparkles"></span> NEW COLLECTION</span>
+                    <h2>Complete Your Look</h2>
+                    <p>Tidak hanya baju — aksesoris vintage yang bikin OOTD-mu makin standout. Dari tas, kalung, topi, hingga kacamata retro.</p>
+                </div>
+                <div class="aks-header-cta">
+                    <button onclick="filterCat('aksesoris'); document.getElementById('products').scrollIntoView({behavior:'smooth'})" class="btn-ghost">
+                        Lihat Semua Aksesoris <span class="iconify" data-icon="mdi:arrow-right"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Featured Horizontal Scroll -->
+            <div class="aks-featured-label">✨ Pilihan Terbaik</div>
+            <div class="aks-scroll" id="aksScroll"></div>
+
+            <!-- Full Grid -->
+            <div class="aks-grid" id="aksGrid"></div>
+        </section>
+                
+        <!-- testimonials mulai dari sini -->
+        <section class="section">
+        </section>
+
+        <!-- Testimonials -->
+        <section class="section">
+            <div class="section-head">
+                <h2>Apa Kata Mereka</h2>
+                <p>Customer puas berbelanja di HiCima</p>
+            </div>
+            <div class="testi-grid">
+                <div class="testi-card">
+                    <div class="testi-stars"><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span></div>
+                    <p>"Bajunya original dan pengiriman cepat. Udah langganan dari awal buka, selalu puas!"</p>
+                    <div class="testi-author"><div class="testi-avatar" style="background:linear-gradient(135deg,#ec4899,#f472b6)">M</div><div><b>Micheal</b><small>Bireun</small></div></div>
+                </div>
+                <div class="testi-card">
+                    <div class="testi-stars"><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span></div>
+                    <p>"UI-nya cakep banget, gampang cari produk. Harga juga murah meriah tapi kualitas juara!"</p>
+                    <div class="testi-author"><div class="testi-avatar" style="background:linear-gradient(135deg,#10b981,#34d399)">H</div><div><b>Hytul Riska</b><small>Banda Aceh</small></div></div>
+                </div>
+                <div class="testi-card">
+                    <div class="testi-stars"><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star"></span><span class="iconify" data-icon="mdi:star-half-full"></span></div>
+                    <p>"CS responsif banget, ada masalah langsung ditangani. Recommended thrift shop!"</p>
+                    <div class="testi-author"><div class="testi-avatar" style="background:linear-gradient(135deg,#a855f7,#c084fc)">A</div><div><b>Assyifa</b><small>Medan</small></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About -->
+        <section id="about" class="section about-section">
+            <div class="about-grid">
+                <div class="about-img-wrap">
+                    <img src="images/ighicima.jpeg" alt="Toko Thrift by hicima" class="about-img">
+                </div>
+                <div class="about-text">
+                    <h2>Mengapa Kami Memilih Thrift?</h2>
+                    <p>HiCima lahir dari kecintaan kami terhadap fashion dan bumi. Industri fast fashion menghasilkan limbah masif. Dengan merawat kembali pakaian berkualitas, kita memperpanjang umur pakainya.</p>
+                    <p>Setiap item di rak kami memiliki sejarah. Kami berusaha menemukan pemilik baru yang menghargainya.</p>
+                    <ul class="about-list">
+                        <li><span class="iconify" data-icon="mdi:check-circle" style="color:#10b981"></span> 100% Original Brand (Uniqlo, H&M, Zara, dll)</li>
+                        <li><span class="iconify" data-icon="mdi:check-circle" style="color:#10b981"></span> Grade A — Mulus like new</li>
+                        <li><span class="iconify" data-icon="mdi:check-circle" style="color:#10b981"></span> Support Local Kurir</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="section">
+            <div class="newsletter-card">
+                <div class="newsletter-glow"></div>
+                <span class="iconify newsletter-icon" data-icon="mdi:email-heart-outline"></span>
+                <h2>Dapatkan Update Terbaru</h2>
+                <p>Subscribe untuk info promo eksklusif dan produk baru langsung di inbox-mu.</p>
+                <div class="newsletter-form">
+                    <input id="emailInput" type="email" placeholder="email@kamu.com" class="newsletter-input">
+                    <button onclick="subscribe()" class="newsletter-btn">Subscribe</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-col footer-brand">
+                    <div class="logo"><div class="logo-icon" style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; font-style:italic;">H</div><span class="logo-text">HI<span class="logo-pink">CIMA</span></span></div>
+                    <p>Platform thrift shop premium dengan koleksi terbaik dan pengalaman belanja termodern.</p>
+                   <div class="footer-socials">
+    <!-- Instagram -->
+    <a href="https://instagram.com/hicima._" target="_blank">
+        <span class="iconify" data-icon="mdi:instagram"></span>
+    </a>
+
+    <!-- Twitter (opsional) -->
+    <a href="https://twitter.com/" target="_blank">
+        <span class="iconify" data-icon="mdi:twitter"></span>
+    </a>
+
+    <!-- TikTok -->
+    <a href="https://tiktok.com/" target="_blank">
+        <span class="iconify" data-icon="simple-icons:tiktok"></span>
+    </a>
+
+    <!-- WhatsApp -->
+    <a href="https://wa.me/6283846120071" target="_blank">
+        <span class="iconify" data-icon="mdi:whatsapp"></span>
+    </a>
+</div>
+                </div>
+                <div class="footer-col">
+                    <h4>Belanja</h4>
+                    <ul><li><a href="#">Kategori</a></li><li><a href="#">Flash Sale</a></li><li><a href="#">Brand Terbaru</a></li><li><a href="#">Rekomendasi</a></li></ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Bantuan</h4>
+                    <ul><li><a href="#">FAQ</a></li><li><a href="#">Pengiriman</a></li><li><a href="#">Pengembalian</a></li><li><a href="#">Hubungi Kami</a></li></ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Pembayaran</h4>
+                    <div class="pay-badges"><span>BRI</span><span>BSI</span><span>BCA</span><span>OVO</span><span>DANA</span><span>GOPAY</span></div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Thrift by hicima_. All rights reserved.</span>
+                <span>Made with <span style="color:#ec4899">&#9829;</span> in Pidie Aceh</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
