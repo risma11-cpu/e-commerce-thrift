@@ -134,7 +134,6 @@ function toggleWishItem(id) {
     updateWishUI();
     refreshAll();
 }
-
 function updateWishUI() {
     var bd = document.getElementById("wishBadge");
     if (bd) {
@@ -149,10 +148,11 @@ function updateWishUI() {
 
     if (wishlist.length === 0) {
         el.innerHTML = '<div class="wish-empty-msg"><span class="iconify" data-icon="mdi:heart-off-outline"></span><p>Wishlist kosong</p><small>Tandai produk favoritmu!</small></div>';
+        updateBottomNavBadge();
         return;
     }
 
-    var h = "";
+        var h = "";
     for (var i = 0; i < wishlist.length; i++) {
         var p = products.find(function(x) { return x.id === wishlist[i]; });
         if (!p) continue;
@@ -167,7 +167,9 @@ function updateWishUI() {
             '</div></div></div>';
     }
     el.innerHTML = h;
+    updateBottomNavBadge();
 }
+
 
 function toggleWish() {
     var sb = document.getElementById("wishSidebar");
@@ -767,9 +769,10 @@ document.addEventListener("keydown", function(e) {
 /* ============================================
    INIT
    ============================================ */
-document.addEventListener("DOMContentLoaded", function() {
-    renderCats();
-    refreshAll();
-    updateCartUI();
-    updateWishUI();
-});
+function updateBottomNavBadge() {
+    var bd = document.getElementById("bottomWishBadge");
+    if (bd) {
+        bd.textContent = wishlist.length;
+        bd.classList.toggle("show", wishlist.length > 0);
+    }
+}
